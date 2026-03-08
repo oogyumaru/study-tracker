@@ -18,7 +18,7 @@ export default function middleware(request) {
             const [providedUser, providedPwd] = decodedValue.split(':');
 
             if (providedUser === user && providedPwd === pwd) {
-                return Response.next(); // Go to the app
+                return; // Return nothing to continue the request on Vercel Edge
             }
         }
 
@@ -32,5 +32,5 @@ export default function middleware(request) {
     }
 
     // If environment variables are empty, pass through
-    return Response.next();
+    return;
 }
