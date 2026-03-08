@@ -1,10 +1,23 @@
 const API_URL = "/api/records";
 
+const handleResponse = async (response) => {
+    if (!response.ok) {
+        let errorDetails = 'Unknown error';
+        try {
+            const errorData = await response.json();
+            errorDetails = JSON.stringify(errorData);
+        } catch (e) {
+            errorDetails = await response.text();
+        }
+        throw new Error(`API Error (${response.status}): ${errorDetails}`);
+    }
+    return response.json();
+};
+
 export const api = {
     fetchRecords: async () => {
         const response = await fetch(API_URL);
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
+        return handleResponse(response);
     },
 
     addRecord: async (record) => {
@@ -15,7 +28,7 @@ export const api = {
             },
             body: JSON.stringify({ action: 'add', record }),
         });
-        if (!response.ok) throw new Error('Network response was not ok');
+        await handleResponse(response);
         return true;
     },
 
@@ -27,7 +40,7 @@ export const api = {
             },
             body: JSON.stringify({ action: 'delete', id }),
         });
-        if (!response.ok) throw new Error('Network response was not ok');
+        await handleResponse(response);
         return true;
     }
 };
